@@ -12,7 +12,8 @@
         <v-divider></v-divider>
 
         <v-list dense nav>
-          <v-list-item-group v-model="itemIndex">
+          <!-- 加上mandatory点击两次就不会取消选中 -->
+          <v-list-item-group v-model="itemIndex" mandatory>
             <template v-for="item in items">
               <router-link :to="item.link" :key="item.title">
                 <v-list-item color="primary" link>
@@ -41,7 +42,13 @@
           <v-spacer></v-spacer>
 
           <v-responsive max-width="260">
-            <v-text-field dense flat hide-details rounded solo-inverted></v-text-field>
+            <v-text-field
+              dense
+              flat
+              hide-details
+              rounded
+              solo-inverted
+            ></v-text-field>
           </v-responsive>
         </v-container>
       </v-app-bar>
@@ -72,7 +79,8 @@ export default {
     itemIndex: 0, //被选中的项
     items: [
       { title: "Dashboard", icon: "mdi-view-dashboard", link: "/" },
-      { title: "Photos", icon: "mdi-image", link: "/about" },
+      { title: "Table", icon: "mdi-image", link: "/table" },
+      { title: "Form", icon: "mdi-image", link: "/form" },
       { title: "About", icon: "mdi-help-box", link: "/about" }
     ]
   })
