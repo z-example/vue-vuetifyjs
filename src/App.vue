@@ -78,10 +78,7 @@ export default {
     links: ["Dashboard", "Messages", "Profile", "Updates"],
     itemIndex: 0, //被选中的项
     items: [
-      { title: "Dashboard", icon: "mdi-view-dashboard", link: "/" },
-      { title: "Table", icon: "mdi-image", link: "/table" },
-      { title: "Form", icon: "mdi-image", link: "/form" },
-      { title: "About", icon: "mdi-help-box", link: "/about" }
+      { title: "用户管理", icon: "mdi-image", link: "/" },
     ]
   })
 };

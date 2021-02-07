@@ -1,26 +1,14 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-import Table from "../views/Table.vue";
-import Form from "../views/Form.vue";
+import User from "../views/User.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home
-  },
-  {
-    path: "/table",
-    name: "Table",
-    component: Table
-  },
-  {
-    path: "/form",
-    name: "Form",
-    component: Form
+    name: "User",
+    component: User
   },
   {
     path: "/about",
