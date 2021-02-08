@@ -21,17 +21,21 @@
             class="mx-2"
             depressed
             color="primary"
-            @click="drawer = !drawer"
+            @click="
+              drawerFrom = 'addUser';
+              drawer = true;
+            "
             >添加用户</v-btn
           >
           <v-btn class="mx-2" depressed @click="deleteUsers">删除用户</v-btn>
           <v-btn class="mx-2" depressed @click="resetQuota">重置用量</v-btn>
           <v-btn class="mx-2" depressed @click="resetPassword">重置密码</v-btn>
+          <v-btn class="mx-2" depressed @click="showQuotaForm">设置额度</v-btn>
           <v-spacer></v-spacer>
- 
+
           <v-responsive max-width="260">
             <v-text-field
-            v-model="options.search"
+              v-model="options.search"
               dense
               flat
               hide-details
@@ -39,7 +43,6 @@
               solo-inverted
             ></v-text-field>
           </v-responsive>
-          
         </v-toolbar>
       </template>
       <template v-slot:[`item.upload`]="{ item }">
@@ -53,6 +56,7 @@
       </template>
     </v-data-table>
 
+    <!-- 抽屉 -->
     <v-navigation-drawer
       v-model="drawer"
       absolute
@@ -60,7 +64,8 @@
       temporary
       style="width: 500px"
     >
-      <v-form ref="form" style="padding: 20px">
+      <!-- 添加用户 -->
+      <v-form ref="form" style="padding: 20px" v-show="drawerFrom == 'addUser'">
         <v-text-field
           :counter="10"
           label="用户名"
@@ -96,11 +101,34 @@
         <v-btn color="success" class="mr-4" @click="addUser">提交</v-btn>
         <v-btn color="error" class="mr-4" @click="reset">重置</v-btn>
       </v-form>
+      <!-- 设置额度 -->
+      <v-form ref="form" style="padding: 20px" v-show="drawerFrom == 'quota'">
+        <v-select
+          :items="quotas"
+          :item-value="'value'"
+          :item-text="'name'"
+          :rules="[(v) => !!v || 'Item is required']"
+          v-model="quota.quota"
+          label="额度"
+          required
+        ></v-select>
+        <v-select
+          :items="days"
+          :item-value="'value'"
+          :item-text="'name'"
+          :rules="[(v) => !!v || 'Item is required']"
+          v-model="quota.days"
+          label="有效期"
+          required
+        ></v-select>
+
+        <v-btn color="success" class="mr-4" @click="setQuota">确认</v-btn>
+      </v-form>
     </v-navigation-drawer>
 
-<!-- 新密码显示框 -->
+    <!-- 新密码显示框 -->
     <v-dialog v-model="dialog" max-width="460">
-      <v-simple-table style="padding: 20px 30px;">
+      <v-simple-table style="padding: 20px 30px">
         <template v-slot:default>
           <thead>
             <tr>
@@ -133,6 +161,7 @@ export default {
   data() {
     return {
       drawer: null,
+      drawerFrom: null,
       loading: false,
       dialog: false,
       rowCount: 10,
@@ -183,13 +212,17 @@ export default {
           (v) => !!v || "E-mail is required",
           (v) => /.+@.+/.test(v) || "E-mail must be valid",
         ],
-        quota: 5,
+        quota: 5 * 1024_000_000,
+        days: 30,
+      },
+      quota: {
+        quota: 5 * 1024_000_000,
         days: 30,
       },
       quotas: [
-        { name: "1 GB", value: 1 },
-        { name: "5 GB", value: 5 },
-        { name: "10 GB", value: 10 },
+        { name: "1 GB", value: 1024_000_000 },
+        { name: "5 GB", value: 5 * 1024_000_000 },
+        { name: "10 GB", value: 10 * 1024_000_000 },
       ],
       // quotas: [1, 5, 10],
       // days: [7, 15, 30, 60],
@@ -216,6 +249,13 @@ export default {
   methods: {
     reset() {
       this.$refs.form.reset();
+    },
+    showQuotaForm() {
+      if (this.selected.length === 0) {
+        alert("请选择用户");
+      }
+      this.drawerFrom = "quota";
+      this.drawer = true;
     },
     userList() {
       this.loading = true;
@@ -247,7 +287,7 @@ export default {
           username: this.user.username,
           password: this.user.password,
           days: this.user.days,
-          quota: this.user.quota * 1024_000_000,
+          quota: this.user.quota,
         })
         .then(() => {
           this.userList();
@@ -289,6 +329,26 @@ export default {
       const ids = this.selected.map((v) => v.id).join(",");
       axios
         .post("/api/user/reset_quota?id=" + ids)
+        .then(() => {
+          this.userList();
+        })
+        .catch(function (error) {
+          var data = error.response.data;
+          alert(data.message);
+          console.log(error);
+        });
+    },
+    setQuota() {
+      if (this.selected.length === 0) {
+        return;
+      }
+      const ids = this.selected.map((v) => v.id).join(",");
+      axios
+        .post("/api/user/quota", {
+          ids: ids,
+          quota: this.quota.quota,
+          days: this.quota.days,
+        })
         .then(() => {
           this.userList();
         })
