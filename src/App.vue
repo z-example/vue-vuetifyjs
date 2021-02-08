@@ -4,8 +4,8 @@
       <v-navigation-drawer v-model="drawer" app>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="title">Application</v-list-item-title>
-            <v-list-item-subtitle>subtext</v-list-item-subtitle>
+            <v-list-item-title class="title">Trojan Panel</v-list-item-title>
+            <v-list-item-subtitle>欢迎使用</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
@@ -41,15 +41,6 @@
 
           <v-spacer></v-spacer>
 
-          <v-responsive max-width="260">
-            <v-text-field
-              dense
-              flat
-              hide-details
-              rounded
-              solo-inverted
-            ></v-text-field>
-          </v-responsive>
         </v-container>
       </v-app-bar>
 
